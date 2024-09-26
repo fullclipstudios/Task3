@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<!--
+Design: James Oliver
+Name       : James' assessment 3 webpage - search
+Description: A two-column, fixed-width design for 1024x768 screen resolutions.
+Version    : 1.0
+Released   : 2024
+-->
+
+
+<html>
+
+<head>
+	
+	
+	<!-- tab text -->
+	<title>Search - Fundraisers For A Better World</title>
+
+	<!-- style sheet link  -->
+	<link rel="stylesheet" href="style.css" type="text/css" media="screen" />
+</head>
+
+<body>
+
+
+<!-- menu -->
+<div id="header-wrapper">
+	<header>
+		<div id="menu">
+			<ul>
+				<li><a href="/">Home</a></li>
+				<li class="current_page_item"><a href="">Search Fundraisers</a></li>		
+			</ul>
+		</div>
+
+	</header>	
+</div>
+
+
+
+<!-- page content start-->
+<div id="page">
+
+	<div id="logo">
+		<!-- page heading -->
+		<h1>Fundraisers For a Better World</h1>
+	</div>
+	
+	
+	
+	<div id="content">
+		
+		<!-- Title box-->
+		<div class="post">
+			<h2 class="title">Search</h2>
+		</div>
+		
+		<!-- search bar box -->
+		<div class="post">			
+			<div class="search-container">
+				<label for="search">Search by:</label>
+				
+				<!-- Search option checkbox's -->
+				<div class="checkbox-group">
+	
+					<div class="checkbox-item">
+						<input type="checkbox" id="city" name="city"> 
+						<label for="city">City</label>
+					</div>
+					<div class="checkbox-item">
+						<input type="checkbox" id="organizer" name="organizer"> 
+						<label for="organizer">Organizer</label>
+					</div>
+					<div class="checkbox-item">
+						 <label for="category">Category:</label>
+					<select id="category" name="category" onchange = "categorySelection(this.value)">
+						<option value="">--Please choose an option--</option>
+						<option value="1">Community</option>
+						<option value="2">Arts</option>
+						<option value="3">Environment</option>
+						<option value="4">Health</option>
+						<option value="5">Animal Welfare</option>
+					</select>
+					</div>
+					
+					
+					<!-- Search box and button-->
+					<input type="text" id="search" name="search" placeholder="Type your search here..." required>
+					<input type="button" value="Search" onclick="searchCheck()">
+					
+					<!-- Clear button -->
+					<input type="button" value="clear filters" onclick="clearFilters()">
+				</div>	
+			</div>
+		</div>
+		
+		<!-- results of search box -->
+		<div class="postSearch" style="display: none;">
+			<!-- Your search results go here -->
+			<h2 class="title">Search Results</h2>
+			<div id="results">
+			</div>
+		</div>	
+	</div>
+	
+		
+
+		
+	
+<div style="clear: both;">&nbsp;</div>
+	
+</div>
+		
+			
+			
+    
+<script>
+					//search box and selection box logic
+					function searchCheck() 
+					{
+						const cityChecked = document.getElementById("city").checked;
+						const orgChecked = document.getElementById("organizer").checked; 
+						const searchTerm = document.getElementById('search').value.trim(); 
+						const catSelect = document.getElementById("category").value; 
+
+							
+						if ((cityChecked || orgChecked) && searchTerm === "")
+						{
+							alert("Please enter a search term ");
+							return; 
+						}
+
+							
+						if (searchTerm === "" && !cityChecked && !orgChecked && catSelect === "") 
+						{
+							alert("Please enter a search term or select a filter");
+							return; 
+						}
+
+	
+						if (cityChecked) 
+						{
+							showFundraisersByCity(searchTerm);
+						}
+							
+							
+						if(orgChecked)
+						{
+							showFundraisersByOrg(searchTerm);
+						}
+
+
+						if (!cityChecked && !orgChecked && catSelect === "") 
+						{
+							alert("Please select a category filter");
+							return; 
+						}
+
+					}
+
+
+					//show fundraisers when city checkbox is selected, and match with search term
+					function showFundraisersByCity(city)
+					{
+						const postDiv = document.querySelector('.postSearch');
+						postDiv.style.display = 'block'; 
+						const dataDiv = document.getElementById('results');
+						dataDiv.innerHTML = ""; 
+
+						fetch(`http://localhost:8080/api/crowdfunding_db/city/${encodeURIComponent(city)}`)
+							.then(response => {
+								console.log("Response:", response);
+								return response.json();
+							})
+							.then(data => {
+								if (Array.isArray(data) && data.length > 0) 
+								{
+									data.forEach(fundraiser => 
+									{
+										const header = document.createElement("h3");
+
+										// Create a hyperlink to/fundraiser page
+										const link = document.createElement("a");
+					
+										//link to new page passing the id into the URL
+										link.href = `http://localhost:3060/fundraiser.html?id=${fundraiser.FUNDRAISER_ID}`;
+										link.textContent = `${fundraiser.ORGANIZER} - ${fundraiser.CAPTION}`;
+										link.target = "_blank"; 
+										link.style.color = 'inherit';
+
+										// Append link to header
+										header.appendChild(link);
+										dataDiv.appendChild(header);
+
+										const cityP = document.createElement("p");
+										cityP.textContent = `City: ${fundraiser.CITY}`;
+										
+										const targetP = document.createElement("p");
+										targetP.textContent = `Target Funds: $${fundraiser.TARGET_FUNDING}`;
+
+										const currentP = document.createElement("p");
+										currentP.textContent = `Current Funds: $${fundraiser.CURRENT_FUNDING}`;
+
+										const stateP = document.createElement("p");
+										stateP.textContent = `Active: ${fundraiser.ACTIVE === 1 ? 'Yes' : 'Currently Not Active'}`;
+
+										const idP = document.createElement("p");
+										idP.textContent = `ID: ${fundraiser.FUNDRAISER_ID}`;
+
+										// Append in order of display
+										dataDiv.appendChild(header);
+										dataDiv.appendChild(cityP);
+										dataDiv.appendChild(targetP);
+										dataDiv.appendChild(currentP);
+										dataDiv.appendChild(stateP);
+										dataDiv.appendChild(idP);
+										
+										//line break
+										const hr = document.createElement("hr");
+										dataDiv.appendChild(hr);
+										
+									});
+								} else {
+									//error message in red bold
+									const noFundraisersMessage = document.createElement("p");
+									noFundraisersMessage.textContent = "No fundraisers available for this city.";
+									noFundraisersMessage.classList.add("no-fundraisers"); 
+									dataDiv.innerHTML = ""; 
+									dataDiv.appendChild(noFundraisersMessage); 
+								}
+							})
+							.catch(error => {
+								console.error("Error fetching data:", error);
+								dataDiv.textContent = "Failed to load data.";
+							});
+					}
+						
+					
+					//show fundraisers when org checkbox is selected, and match with search term
+					function showFundraisersByOrg(org) 
+					{
+						const postDiv = document.querySelector('.postSearch');
+						postDiv.style.display = 'block'; 
+						const dataDiv = document.getElementById('results');
+						dataDiv.innerHTML = ""; 
+
+						fetch(`http://localhost:8080/api/crowdfunding_db/organizer/${encodeURIComponent(org)}`)
+								.then(response => 
+								{
+									console.log("Response:", response);
+									return response.json();
+								})
+								.then(data => 
+								{
+									if (Array.isArray(data) && data.length > 0) 
+									{
+										data.forEach(fundraiser => 
+										{
+											const header = document.createElement("h3");
+											
+											// Create hyperlink
+											const link = document.createElement("a");
+											//link to new page passing the id into the URL
+											link.href = `http://localhost:3060/fundraiser.html?id=${fundraiser.FUNDRAISER_ID}`;
+											link.textContent = `${fundraiser.ORGANIZER} - ${fundraiser.CAPTION}`;
+											link.target = "_blank"; 
+											link.style.color = 'inherit';
+
+											// Append link to header
+											header.appendChild(link);
+											dataDiv.appendChild(header);
+
+											const cityP = document.createElement("p");
+											cityP.textContent = `City: ${fundraiser.CITY}`;
+
+											const targetP = document.createElement("p");
+											targetP.textContent = `Target Funds: $${fundraiser.TARGET_FUNDING}`;
+
+											const currentP = document.createElement("p");
+											currentP.textContent = `Current Funds: $${fundraiser.CURRENT_FUNDING}`;
+
+											const stateP = document.createElement("p");
+											stateP.textContent = `Active: ${fundraiser.ACTIVE === 1 ? 'Yes' : 'Currently Not Active'}`;
+
+											const idP = document.createElement("p");
+											idP.textContent = `ID: ${fundraiser.FUNDRAISER_ID}`;
+
+											// Append in order of display
+											dataDiv.appendChild(header);
+											dataDiv.appendChild(cityP);
+											dataDiv.appendChild(targetP);
+											dataDiv.appendChild(currentP);
+											dataDiv.appendChild(stateP);
+											dataDiv.appendChild(idP);
+											
+											//line break
+											const hr = document.createElement("hr");
+											dataDiv.appendChild(hr);
+										
+										});
+									} 
+									else 
+									{
+										//error message in red bold
+										const noFundraisersMessage = document.createElement("p");
+										//error message
+										noFundraisersMessage.textContent = "No fundraisers available by this organizer.";
+										
+										//css reference
+										noFundraisersMessage.classList.add("no-fundraisers"); 
+										
+										dataDiv.innerHTML = ""; 
+										dataDiv.appendChild(noFundraisersMessage); 
+									}
+								})
+								.catch(error => 
+								{
+									console.error("Error fetching data:", error);
+									dataDiv.textContent = "Failed to load data.";
+								});
+						}
+						
+					//passes selection categorty into show Category function	
+					function categorySelection(selectedCat)
+					{
+						if (selectedCat)
+						{
+							showFundraisersByCat(selectedCat);
+						}
+					}
+					
+					
+					//show fundraisers when a dropdown category has been selected, and match with search term
+					function showFundraisersByCat(cat) 
+					{
+						const postDiv = document.querySelector('.postSearch');
+						postDiv.style.display = 'block'; 
+						const dataDiv = document.getElementById('results');
+						dataDiv.innerHTML = ""; 
+
+						fetch(`http://localhost:8080/api/crowdfunding_db/category/${encodeURIComponent(cat)}`)
+								.then(response => 
+								{
+									console.log("Response:", response);
+									return response.json();
+								})
+								.then(data => 
+								{
+									if (Array.isArray(data) && data.length > 0) 
+									{
+										data.forEach(fundraiser => 
+										{
+											const header = document.createElement("h3");
+
+											// Create hyperlink
+											const link = document.createElement("a");
+											//link to new page passing the id into the URL
+											link.href = `http://localhost:3060/fundraiser.html?id=${fundraiser.FUNDRAISER_ID}`;
+											link.target = "_blank"; 
+											link.style.color = 'inherit';
+											link.textContent = `${fundraiser.ORGANIZER} - ${fundraiser.CAPTION}`; 
+
+											// Append link to header
+											header.appendChild(link);
+											dataDiv.appendChild(header);
+
+											const cityP = document.createElement("p");
+											cityP.textContent = `City: ${fundraiser.CITY}`;
+
+											const targetP = document.createElement("p");
+											targetP.textContent = `Target Funds: $${fundraiser.TARGET_FUNDING}`;
+
+											const currentP = document.createElement("p");
+											currentP.textContent = `Current Funds: $${fundraiser.CURRENT_FUNDING}`;
+
+											const stateP = document.createElement("p");
+											stateP.textContent = `Active: ${fundraiser.ACTIVE === 1 ? 'Yes' : 'Currently Not Active'}`;
+
+											const idP = document.createElement("p");
+											idP.textContent = `ID: ${fundraiser.FUNDRAISER_ID}`;
+
+											// Append in order of display
+											dataDiv.appendChild(header);
+											dataDiv.appendChild(cityP);
+											dataDiv.appendChild(targetP);
+											dataDiv.appendChild(currentP);
+											dataDiv.appendChild(stateP);
+											dataDiv.appendChild(idP);
+											
+											//line break
+											const hr = document.createElement("hr");
+											dataDiv.appendChild(hr);
+										});
+									} 
+									else 
+									{
+										//error message in red bold
+										const noFundraisersMessage = document.createElement("p");
+										//error message
+										noFundraisersMessage.textContent = "No fundraisers in this category.";
+										
+										//css reference
+										noFundraisersMessage.classList.add("no-fundraisers"); 
+										
+										dataDiv.innerHTML = ""; 
+										dataDiv.appendChild(noFundraisersMessage); 
+									}
+								})
+								.catch(error => 
+								{
+									console.error("Error fetching data:", error);
+									dataDiv.textContent = "Failed to load data.";
+								});
+						}
+						
+						
+					//clears check box's
+					function clearFilters()
+					{
+							const checkboxes = document.querySelectorAll('.checkbox-group input[type="checkbox"]');
+							checkboxes.forEach(checkbox => 
+							{
+								checkbox.checked = false;
+							});
+							document.getElementById("category").value = "";
+							document.getElementById("search").value = ""; // Clear the search input
+							document.querySelector('.postSearch').style.display = 'none'; // Hide results
+							document.getElementById('results').innerHTML = ""; // Clear results
+					}
+				
+			
+</script>
+
+<!-- footer text -->
+<div style="clear: both;">&nbsp;</div>
+<footer>
+		<p>Copyright (c) 2024. All rights reserved. Design by James Oliver</p>
+</footer>
+
+
+
+</body>
+</html>
+
+</html>
+			
+	
+	
