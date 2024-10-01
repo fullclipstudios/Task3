@@ -38,6 +38,12 @@ myapp.get("/fundraiser", (req, res) =>
 	res.sendFile(path.join(__dirname,"fundraiser.html"));
 })
 
+//go to donation page
+myapp.get("/donation", (req, res) =>
+{
+	res.sendFile(path.join(__dirname,"donation.html"));
+})
+
 //start server
 myapp.listen(port, host, () => {
 	//print line to confirm

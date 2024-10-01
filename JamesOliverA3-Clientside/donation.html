@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--
 Design: James Oliver
-Name       : James' assessment 3 webpage - fundraisers landing
+Name       : James' assessment 3 webpage - donation landing
 Description: A two-column, fixed-width design for 1024x768 screen resolutions.
 Version    : 1.0
 Released   : 2024
@@ -13,7 +13,7 @@ Released   : 2024
 		
 		
 		<!-- tab text-->
-		<title>Fundraisers For A Better World</title>
+		<title>Donate-Fundraisers For A Better World</title>
 		
 		<!-- style sheet link -->
 		<link rel="stylesheet" href="style.css" type="text/css" media="screen" />
@@ -50,21 +50,51 @@ Released   : 2024
 		</div>
 
 
-		<!-- content fetched wil display in this box -->
+		<!-- Display some data of the fundraiser -->
 		<div class="post">
 			<div id="fundraiser-details">
 			</div> 
 		</div>
+		
+		<!-- Form -->
+		<div class="post">
+			<div id="fundraiser-details">
+			</div> 
+			
+			<h2>Donate to xx here </h2>
+
+			<form action="/action_page.php">
+			  <label for="fname">First name:</label><br>
+			  <input type="text" id="giver" name="giver" value=><br>
+			  <label for="amount">Amount (AUD)</label><br>
+			  <input type="number" id="amount" name="amount" value=><br><br>
+			  <input type="submit" value="Submit My Donation">
+			</form> 
+		</div>
 
     <script>
-	
-		//donate button function
-		function donate()
+		
+		function submitDonation()
 		{
-		
-			alert("This feature is under contruction");
+			//minumum donation is $5
+			if (donation <5)
+			{
+				//call API and insert donation into donation table
+				
+				//alert
+				alert.("Thankyou for your donation to xx");
+				
+				//redirect to fundraiser page
+			}
+			
+			else
+			{
+				//alert
+				alert.("The minimum donation is $5 AUD");
+			}
+			
 		}
-		
+
 		//onload
         window.onload = function() {
             const params = new URLSearchParams(window.location.search);
@@ -95,50 +125,27 @@ Released   : 2024
                 });
         }
 
-		//displays fetched data 
+		//displays fetched data - show some details of fundraiser
         function displayFundraiserDetails(fundraiser) 
 		{
 			const detailDiv = document.getElementById('fundraiser-details');
 			detailDiv.innerHTML = ''; 
 
-			
 			const data = fundraiser[0]; 
-
+	
 			const header = document.createElement("h2");
 			header.textContent = `${data.ORGANIZER} - ${data.CAPTION}`;
-			
-			const cityP = document.createElement("p");
-			cityP.textContent = `City: ${data.CITY}`;
-			
+	
 			const targetP = document.createElement("p");
 			targetP.textContent = `Target Funds: $${data.TARGET_FUNDING}`;
 			
 			const currentP = document.createElement("p");
 			currentP.textContent = `Current Funds: $${data.CURRENT_FUNDING}`;
-			
-			const stateP = document.createElement("p");
-			stateP.textContent = `Active: ${data.ACTIVE === 1 ? 'Yes' : 'Currently Not Active'}`;
-			
-			const idP = document.createElement("p");
-			idP.textContent = `ID: ${data.FUNDRAISER_ID}`;
-			
-			const donateButton = document.createElement("button");
-			//button text
-			donateButton.textContent = `Donate to ${data.ORGANIZER}`; 
-			donateButton.onclick = () => 
-			{
-				// re direct to donation page, fix to use query string
-				window.location.href = "donation.html";
-			};
-
+	
 			detailDiv.appendChild(header);
-			detailDiv.appendChild(cityP);
 			detailDiv.appendChild(targetP);
 			detailDiv.appendChild(currentP);
-			detailDiv.appendChild(stateP);
-			detailDiv.appendChild(idP);
 			detailDiv.appendChild(donateButton);
-
 		}
 
 		//error message 
@@ -147,6 +154,9 @@ Released   : 2024
             const detailDiv = document.getElementById('fundraiser-details');
             detailDiv.innerHTML = `<p style="color: red;">${message}</p>`;
         }
+	
+		
+		
     </script>
 </body>
 </html>
