@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<!--
+Design: James Oliver
+Name       : James' assessment 3 webpage - admin landing
+Description: A two-column, fixed-width design for 1024x768 screen resolutions.
+Version    : 1.0
+Released   : 2024
+-->
+
+<html>
+	<head>
+			<!-- tab text-->
+			<title>Admin Portal-Fundraisers For A Better World</title>
+			
+			<!-- style sheet link -->
+			<link rel="stylesheet" href="style.css" type="text/css" media="screen" />
+			
+			<!-- text align for this specific page-->
+			<style>
+				p{text-align: left;
+				}
+			</style>	
+	</head>
+	
+	<body>
+		<!-- menu -->
+		<div id="header-wrapper">
+			<header>
+				<div id="menu">
+					<ul>
+						<li><a href="/">View live website</a></li>
+					</ul>
+				</div>
+			</header>
+		</div>
+		
+		<!-- jump to shortcuts-->
+		<div id="header-wrapper">
+			<header>
+				<div id="menu">
+					<ul>
+						<li>JUMP TO:</li>
+						<li><a onclick="scrollToSection('all-fundraisers')">All Fundraisers</a></li>
+						<li><a onclick="scrollToSection('insert-fundraiser')">Insert New Fundraiser</a></li>
+						<li><a  onclick="scrollToSection('update-fundraiser')">Update Existing Fundraiser</a></li>
+					</ul>
+				</div>
+			</header>
+		</div>
+		
+	
+		<!-- page content start-->
+		<div id="page">
+			<div id="logo">
+			<!-- page heading -->
+				<h1>Admin Portal</h1>
+			</div>
+		
+		<!-- ACTIVE fundraiers block-->
+		<div id = "all-fundraisers" class= "post">
+			<h2 class="title">All Fundraisers</h2>
+		</div>	
+		
+		<!-- INSERT new fundraier block-->
+		<div id = "insert-fundraiser" class= "post">
+			<h2 class="title">Insert New Fundraiser</h2>
+	
+			<form action="/action_page.php">
+			
+			  <!-- ID input -->
+			  <label for="fundraiser_id">Fundraiser ID</label>
+			  <input type="number" id="fundraiser_id" name="fundraiser_id" required>
+			 
+			  
+			  <!-- Organizer input -->
+			  <label for="organizer">Organizer</label>
+			  <input type="text" id="organizer" name="organizer" required>
+			  
+			  
+			  <!-- Caption input -->
+			  <label for="caption">Caption </label>
+			  <input type="text" id="caption" name="caption" required>
+			  
+			  
+			  <!-- Target Funding input  -->
+			  <label for="target_funding">Target Funding ($AUD)</label>
+			  <input type="number" id="target_funding" name="target_funding"  required>
+			  
+			  
+			  <!-- Current Funding input -->
+			  <label for="current_funding">Current Funding ($AUD)</label>
+			  <input type="number" id="current_funding" name="current_funding" value= 0 required>
+			  
+			  
+			  <!-- City input -->
+			  <label for="city">City</label>
+			  <input type="text" id="city" name="city" required>
+			  
+			  
+			  <!-- Active input/dropdown -->
+			  <label for="active">Active state</label>
+			  <select id="active" name="active" required>
+				<option value="" disabled selected>Select an option</option>
+				<option value="yes">Active</option>
+				<option value="no">Not Active</option>
+			  </select>
+	
+			  <!-- Submit/insert button. CALL POST HERE-->
+			  <input type="insertnew" value="Insert New">
+			</form> 
+		</div>	
+		
+		<!-- UPDATE fundraier block-->
+		<div id = "update-fundraiser" class= "post">
+			<h2 class="title">Update existing Fundraiser</h2>
+	
+			<form action="/action_page.php">
+			
+			  <!-- ID input -->
+			  <label for="fundraiser_id">Fundraiser ID</label>
+			  <input type="number" id="fundraiser_id" name="fundraiser_id" required>
+			 
+			  
+			  <!-- Organizer input -->
+			  <label for="organizer">Organizer</label>
+			  <input type="text" id="organizer" name="organizer" required>
+			  
+			  
+			  <!-- Caption input -->
+			  <label for="caption">Caption </label>
+			  <input type="text" id="caption" name="caption" required>
+			  
+			  
+			  <!-- Target Funding input  -->
+			  <label for="target_funding">Target Funding ($AUD)</label>
+			  <input type="number" id="target_funding" name="target_funding"  required>
+			  
+			  
+			  <!-- Current Funding input -->
+			  <label for="current_funding">Current Funding ($AUD)</label>
+			  <input type="number" id="current_funding" name="current_funding" required>
+			  
+			  
+			  <!-- City input -->
+			  <label for="city">City</label>
+			  <input type="text" id="city" name="city" required>
+			  
+			  
+			  <!-- Active input/dropdown -->
+			  <label for="active">Active state</label>
+			  <select id="active" name="active" required>
+				<option value="" disabled selected>Select an option</option>
+				<option value="yes">Active</option>
+				<option value="no">Not Active</option>
+			  </select>
+	
+			  <!-- Submit/insert button. CALL POST HERE-->
+			  <input type="update" value="Save">
+			</form> 
+			
+			
+			<hr>
+			<h4 class="title">Current Donations</h4>
+		</div>	
+		
+		
+		<script>
+		function scrollToSection(sectionId) 
+		{
+			const section = document.getElementById(sectionId);
+			if (section) 
+			{
+				section.scrollIntoView({ behavior: 'smooth' });
+			}
+		}	
+		
+		function loadActive() 
+					{
+					// Call GET api to show all fundraisers that are active
+					fetch("http://localhost:8080/api/crowdfunding_db/")
+						.then(response => 
+						{
+							console.log("Response:", response);
+							return response.json();
+						})
+						.then(data => 
+						{
+							console.log("Data:", data);
+							const dataDiv = document.getElementById('data');
+							
+							const title = dataDiv.querySelector('.title'); 
+							dataDiv.innerHTML = ""; 
+							dataDiv.appendChild(title); 
+
+							if (Array.isArray(data) && data.length > 0) 
+							{
+								data.forEach(fundraiser => 
+								{
+									const header = document.createElement("h3");
+									header.textContent = `${fundraiser.ORGANIZER} - ${fundraiser.CAPTION}`;
+
+									const cityP = document.createElement("p");
+									cityP.textContent = `City: ${fundraiser.CITY}`;
+
+									const targetP = document.createElement("p");
+									targetP.textContent = `Target Funds: $${fundraiser.TARGET_FUNDING}`;
+
+									const currentP = document.createElement("p");
+									currentP.textContent = `Current Funds: $${fundraiser.CURRENT_FUNDING}`;
+									const idP = document.createElement("p");
+									idP.textContent = `ID: ${fundraiser.FUNDRAISER_ID}`;
+									
+									const categoryP = document.createElement("p"); 
+									categoryP.textContent = `Category: ${fundraiser.CATEGORY_NAME}`;
+
+									// Append in order of display
+									dataDiv.appendChild(header);
+									dataDiv.appendChild(cityP);
+									dataDiv.appendChild(categoryP);
+									dataDiv.appendChild(targetP);
+									dataDiv.appendChild(currentP);
+									dataDiv.appendChild(idP);
+									
+									//line break
+									const hr = document.createElement("hr");
+									dataDiv.appendChild(hr);
+									
+								});
+							} 
+							else 
+							{
+								dataDiv.textContent = "No fundraiser data available.";
+							}
+						})
+						
+				}
+
+			// Load active fundraisers on page load
+			document.addEventListener('DOMContentLoaded', loadActive);
+	
+		</script>	
+	</body>
+
+</html>

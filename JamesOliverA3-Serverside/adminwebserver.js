@@ -15,40 +15,18 @@ myapp.use(cors());
 
 
 const host = 'localhost';
-const port = 3060;
+const port = 3010;
 
 //uses all files within my content(static files) folder
 myapp.use(express.static(path.join(__dirname)));
 
-//go to home page
+//go to home page on client server
 myapp.get("/", (req, res) =>
 {
-	res.sendFile(path.join(__dirname,"index.html"));
+	res.sendFile(path.join(__dirname,"admin.html"));
 });
 
-//go to search page
-myapp.get("/search", (req, res) =>
-{
-	res.sendFile(path.join(__dirname,"search.html"));
-})
 
-//go to fundraiser page
-myapp.get("/fundraiser", (req, res) =>
-{
-	res.sendFile(path.join(__dirname,"fundraiser.html"));
-})
-
-//go to donation page
-myapp.get("/donation", (req, res) =>
-{
-	res.sendFile(path.join(__dirname,"donation.html"));
-})
-
-//go to adminpage
-myapp.get("/admin", (req, res) =>
-{
-	res.sendFile(path.join(__dirname,"admin.html"));
-})
 //start server
 myapp.listen(port, host, () => {
 	//print line to confirm
